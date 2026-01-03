@@ -1,50 +1,108 @@
-const colorPicker = document.getElementById('seed-color')
-const schemeSelect = document.getElementById('scheme-select')
-const getSchemeBtn = document.getElementById('get-scheme-btn')
-const colorSwatches = document.querySelectorAll('.color-swatch')
-const colorHex = document.querySelectorAll('.color-hex')
-const colorColumn = document.querySelectorAll('.color-column')
+import {menuArray} from './data.js'
 
-getSchemeBtn.addEventListener('click', function() {   
-    fetch(`https://www.thecolorapi.com/scheme?hex=${colorPicker.value.slice(1)}&mode=${schemeSelect.value}&count=5`)
-        .then(res => res.json())
-        .then(data => {
-            for (let i = 0; i < data.colors.length; i++){
+const order = []
 
+document.addEventListener('click', function(e){
+    let itemId = 0
+    if (e.target.dataset.add) {
+        addItemToOrder(Number(e.target.dataset.add))
+        itemId = Number(e.target.dataset.add)
+    } 
+    else if (e.target.dataset.remove) {
+        removeItemFromOrder(Number(e.target.dataset.remove))
+        itemId = Number(e.target.dataset.remove)
+    }
+    else if (e.target.dataset.completeorder)
+        document.getElementById('payment-modal').classList.toggle('hidden')
 
-                colorSwatches[i].style.backgroundColor = `${data.colors[i].hex.value}`
-                colorHex[i].textContent = data.colors[i].hex.value
-            }
-        })   
+    return itemId
 })
 
-colorColumn.forEach(function(column) {
-    column.addEventListener('click', function() {
-        const hexValue = column.querySelector('.color-hex').textContent
-        navigator.clipboard.writeText(hexValue)
-        column.classList.add('copied')
-        setTimeout(() => {
-            column.classList.remove('copied')
-        }, 1500);
+function addItemToOrder(itemId) {
+    document.getElementById('success-modal').classList.add('hidden')
+    menuArray.filter(item => {
+        if (item.id === itemId){
+            order.push(item)
+        }
     })
+    renderOrder(order)
+}
+
+function removeItemFromOrder(index) {
+    order.splice(index, 1)
+    renderOrder(order)
+}
+
+function renderMenu() {
+    const menuHTML = menuArray.map(function(item){
+        return `
+            <div class="menu-item">
+                <div class="item-graphic">${item.emoji}</div>
+                <div class="item-details">
+                    <h2 class="item-title">${item.name}</h2>
+                    <p class="item-ingredients">${item.ingredients.join(', ')}</p>
+                    <p class="item-price">$${item.price}</p>
+                </div>
+                <button class="add-btn" aria-label="Add ${item.name} to order" data-add="${item.id}">+</button>
+            </div>
+        `
+    }).join('')
+    document.getElementById('menu-items').innerHTML = menuHTML
+    return menuHTML
+}
+
+renderMenu()
+
+function renderOrder() {
+    const orderToggle = document.getElementById('order-section')
+    const yourOrder = document.getElementById('order-list')
+    const totalHTML = document.getElementById('total-price')
+    let totalPrice = 0
+
+    order.forEach(item => totalPrice += item.price)
+    
+    if (order.length == 0) {
+        orderToggle.classList.add('hidden')
+    } 
+    else if (!order.length == 0) {
+        orderToggle.classList.remove('hidden')
+    }
+
+    yourOrder.innerHTML = order.map((item, index) => {
+        return `
+        <div class="order-line">
+            <div class="order-line-left">
+                <span class="order-item-name">${item.name}</span>
+                <button class="remove-btn" data-remove="${index}">remove</button>
+            </div>
+                <span class="order-item-price">$${item.price}</span>
+        </div>`
+    }).join('')
+
+    totalHTML.innerHTML = `
+            <span class="total-label">Total price:</span>
+            <span class="total-price">$${totalPrice}</span>
+            `
+}
+
+const paymentForm = document.getElementById('payment-form')
+
+paymentForm.addEventListener('submit', function(e){
+    e.preventDefault()
+    const paymentModal = document.getElementById('payment-modal')
+    const successModal = document.getElementById('success-modal')
+    const fullName = document.getElementById('fullName')
+
+    paymentModal.classList.add('hidden')
+
+    order.length = 0
+    document.getElementById('order-section').classList.add('hidden')
+
+    successModal.classList.remove('hidden')
+    successModal.innerHTML = `Thanks, ${document.getElementById('fullName').value}. Your order is on its way!`
+
+    fullName.value = ''
+    document.getElementById('cardNumber').value = ''
+    document.getElementById('cvv').value = ''
+
 })
-
-
-// STEP 4: Copy to clipboard
-//
-// navigator.clipboard.writeText(hexValue)
-//
-// This returns a Promise, so you can chain .then() after it
-
-
-
-// STEP 5 (Optional): Show "Copied!" feedback
-//
-// The CSS already has styles for a .copied class!
-//
-// After copying:
-//   1. Add the class:    column.classList.add('copied')
-//   2. Remove it after 1.5 seconds using setTimeout:
-//      setTimeout(function() {
-//          column.classList.remove('copied')
-//      }, 1500)
