@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Scheme Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <header class="controls">
+        <div class="controls-inner">
+            <div class="color-picker-wrapper">
+                <input type="color" id="seed-color" value="#F55A5A" aria-label="Select seed color">
+                <label for="seed-color" class="color-picker-label">Select seed color</label>
+            </div>
+            
+            <div class="scheme-select-wrapper">
+                <label for="scheme-select" class="visually-hidden">Select color scheme mode</label>
+                <select id="scheme-select" name="scheme">
+                    <option value="monochrome">Monochrome</option>
+                    <option value="monochrome-dark">Monochrome Dark</option>
+                    <option value="monochrome-light">Monochrome Light</option>
+                    <option value="analogic">Analogic</option>
+                    <option value="complement">Complement</option>
+                    <option value="analogic-complement">Analogic Complement</option>
+                    <option value="triad">Triad</option>
+                    <option value="quad">Quad</option>
+                </select>
+            </div>
+            
+            <button type="button" id="get-scheme-btn" class="btn">Get color scheme</button>
+        </div>
+    </header>
+    
+    <main class="color-display">
+        <div class="color-column" data-index="0">
+            <div class="color-swatch" style="background-color: #F55A5A;"></div>
+            <span class="color-hex">#F55A5A</span>
+        </div>
+        <div class="color-column" data-index="1">
+            <div class="color-swatch" style="background-color: #2B283A;"></div>
+            <span class="color-hex">#2B283A</span>
+        </div>
+        <div class="color-column" data-index="2">
+            <div class="color-swatch" style="background-color: #FBF3AB;"></div>
+            <span class="color-hex">#FBF3AB</span>
+        </div>
+        <div class="color-column" data-index="3">
+            <div class="color-swatch" style="background-color: #AAD1B6;"></div>
+            <span class="color-hex">#AAD1B6</span>
+        </div>
+        <div class="color-column" data-index="4">
+            <div class="color-swatch" style="background-color: #A626D3;"></div>
+            <span class="color-hex">#A626D3</span>
+        </div>
+    </main>
+    
+    <script src="index.js"></script>
+</body>
+</html>
